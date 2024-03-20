@@ -20,7 +20,7 @@ export function SidebarMenu() {
             <CirclePlus size={16} />
           </Button>
         </div>
-        <div className="mt-2 px-2 flex-grow flex flex-col gap-2 overflow-y-auto">
+        <div className="mt-2 px-2 flex-grow flex flex-col gap-2 overflow-y-auto scrollbar-hide">
           <ChatLink />
           <ChatLink />
           <ChatLink />
