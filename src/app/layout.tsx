@@ -25,13 +25,13 @@ export default function RootLayout({
       <body className={`${poppins.variable} `}>
         <main
           className={`
-          min-h-screen overflow-hidden 
+          h-screen max-h-screen overflow-hidden 
           grid grid-cols-[200px_auto]
           bg-slate-100
         `}
         >
           <SidebarMenu />
-          <section className="">{children}</section>
+          <section className="overflow-hidden">{children}</section>
         </main>
       </body>
     </html>
