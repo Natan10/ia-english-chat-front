@@ -1,26 +1,26 @@
 "use client";
 
-import { Bot, LogOut } from "lucide-react";
+import { Bot, CirclePlus, LogOut } from "lucide-react";
 import * as Avatar from "../ui/avatar";
 import { ChatLink } from "./chat-link";
+import { Button } from "../ui/button";
 
 export function SidebarMenu() {
   return (
-    <aside className="border-r border-r-slate-300">
+    <aside className="border-r overflow-hidden h-full border-r-slate-300">
       <nav className="h-full flex flex-col">
         <div className="p-5 flex justify-center items-center gap-3">
           <h1 className="text-lg font-normal">AI Tutor</h1>
           <Bot size={24} />
         </div>
 
-        <div className="mt-2 py-2 px-2 max-h-[400px] xl:max-h-[650px] space-y-2 overflow-y-auto">
-          <ChatLink />
-          <ChatLink />
-          <ChatLink />
-          <ChatLink />
-          <ChatLink />
-          <ChatLink />
-          <ChatLink />
+        <div className="px-2 mt-2">
+          <Button className="w-full rounded-full flex items-center gap-2">
+            <span className="text-xs">New Chat</span>
+            <CirclePlus size={16} />
+          </Button>
+        </div>
+        <div className="mt-2 px-2 flex-grow flex flex-col gap-2 overflow-y-auto">
           <ChatLink />
           <ChatLink />
           <ChatLink />
