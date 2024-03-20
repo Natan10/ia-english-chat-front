@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
+import { SidebarMenu } from "@/components/menu/sidebar-menu";
 
 const poppins = Poppins({
   weight: ["400", "500", "700"],
@@ -20,9 +21,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${poppins.variable} min-h-screen overflow-hidden`}>
-        {children}
+    <html>
+      <body className={`${poppins.variable} `}>
+        <main
+          className={`
+          min-h-screen overflow-hidden 
+          grid grid-cols-[200px_auto]
+          bg-slate-100
+        `}
+        >
+          <SidebarMenu />
+          <section className="">{children}</section>
+        </main>
       </body>
     </html>
   );
