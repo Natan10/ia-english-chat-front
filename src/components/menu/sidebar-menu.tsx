@@ -4,8 +4,13 @@ import { Bot, CirclePlus, LogOut } from "lucide-react";
 import * as Avatar from "../ui/avatar";
 import { ChatLink } from "./chat-link";
 import { Button } from "../ui/button";
+import { useClerk } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 export function SidebarMenu() {
+  const { signOut } = useClerk();
+  const router = useRouter();
+
   return (
     <aside className="border-r overflow-hidden h-full border-r-slate-300">
       <nav className="h-full flex flex-col">
@@ -40,7 +45,10 @@ export function SidebarMenu() {
             <span className="text-[10px] font-light truncate">
               Natan-moreira1@hotmail.com
             </span>
-            <button className="outline-none group">
+            <button
+              className="outline-none group"
+              onClick={() => signOut(() => router.push("/signin"))}
+            >
               <LogOut
                 size={16}
                 className="group-hover:text-red-500 transition-colors"
