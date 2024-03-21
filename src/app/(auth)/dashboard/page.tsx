@@ -1,12 +1,11 @@
 import { Send } from "lucide-react";
-
 import { ChatAiAnswer } from "@/components/chat/chat-ai-answer";
 import { ChatAiUser } from "@/components/chat/chat-ai-user";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 
-export default function Home() {
+export default function Dashboard() {
   return (
     <section className="h-full p-10">
       <div className="flex flex-col h-full">

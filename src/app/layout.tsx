@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Poppins } from "next/font/google";
+
 import "./globals.css";
-import { SidebarMenu } from "@/components/menu/sidebar-menu";
 
 const poppins = Poppins({
   weight: ["400", "500", "700"],
@@ -21,19 +22,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html>
-      <body className={`${poppins.variable} `}>
-        <main
-          className={`
-          h-screen max-h-screen overflow-hidden 
-          grid grid-cols-[200px_auto]
-          bg-slate-100
-        `}
-        >
-          <SidebarMenu />
-          <section className="overflow-hidden">{children}</section>
-        </main>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html>
+        <body className={`${poppins.variable} `}>{children}</body>
+      </html>
+    </ClerkProvider>
   );
 }
