@@ -4,11 +4,12 @@ import { Bot, CirclePlus, LogOut } from "lucide-react";
 import * as Avatar from "../ui/avatar";
 import { ChatLink } from "./chat-link";
 import { Button } from "../ui/button";
-import { useClerk } from "@clerk/nextjs";
+import { useAuth, useClerk, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
 export function SidebarMenu() {
   const { signOut } = useClerk();
+  const { user } = useUser();
   const router = useRouter();
 
   return (
@@ -39,11 +40,11 @@ export function SidebarMenu() {
           <div className="border-t border-t-slate-300" />
           <div className="flex items-center gap-3">
             <Avatar.Avatar>
-              <Avatar.AvatarImage src="https://github.com/natan10.png" />
+              <Avatar.AvatarImage src={user?.imageUrl} />
               <Avatar.AvatarFallback>NT</Avatar.AvatarFallback>
             </Avatar.Avatar>
             <span className="text-[10px] font-light truncate">
-              Natan-moreira1@hotmail.com
+              {user?.emailAddresses[0].emailAddress}
             </span>
             <button
               className="outline-none group"
