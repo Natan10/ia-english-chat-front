@@ -18,8 +18,8 @@ export function ChatHeader({ chatId, createdAt }: ChatHeaderProps) {
           </span>
           <span className="text-xs">
             {new Date(createdAt).toLocaleDateString("pt-br", {
+              hour: "numeric",
               minute: "numeric",
-              second: "numeric",
             })}
           </span>
         </div>

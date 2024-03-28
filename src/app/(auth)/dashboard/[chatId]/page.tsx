@@ -1,8 +1,6 @@
 import { toast } from "sonner";
 
 import { Empty } from "@/components/animate/empty";
-import { ChatAiAnswer } from "@/components/chat/chat-ai-answer";
-import { ChatAiUser } from "@/components/chat/chat-ai-user";
 import { ChatContainer } from "@/components/chat/chat-container";
 import { ChatHeader } from "@/components/chat/chat-header";
 import { ChatInput } from "@/components/chat/chat-input";
@@ -10,6 +8,8 @@ import { ChatMessagesContainer } from "@/components/chat/chat-messages-container
 import { Separator } from "@/components/ui/separator";
 import { ChatHistory } from "@/domain/chat-history";
 import { ChatType } from "@/domain/chat-type";
+import { CardUser } from "@/components/chat/cards/card-user/card-user";
+import { CardAi } from "@/components/chat/cards/card-ai/card-ai";
 
 async function getChatHistory(chatId: string) {
   try {
@@ -48,9 +48,9 @@ export default async function ChatPage({
           {chatHistory && chatHistory.history.length > 0 ? (
             chatHistory.history.map((chatResponse) => {
               return chatResponse.type === ChatType.IA ? (
-                <ChatAiAnswer key={chatResponse.id} data={chatResponse} />
+                <CardAi key={chatResponse.id} data={chatResponse} />
               ) : (
-                <ChatAiUser key={chatResponse.id} data={chatResponse} />
+                <CardUser key={chatResponse.id} data={chatResponse} />
               );
             })
           ) : (

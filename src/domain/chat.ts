@@ -1,3 +1,4 @@
+import { ChatFile } from "./chat-file";
 import { ChatType } from "./chat-type";
 
 export interface Chat {
@@ -5,5 +6,6 @@ export interface Chat {
   content: string;
   chatHistoryId: string;
   type: ChatType;
+  file: ChatFile | null;
   createdAt: Date;
 }
