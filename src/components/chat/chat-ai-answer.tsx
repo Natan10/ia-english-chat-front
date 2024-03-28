@@ -1,6 +1,11 @@
 import { BotMessageSquare } from "lucide-react";
+import { Chat } from "@/domain/chat";
 
-export function ChatAiAnswer() {
+type ChatAiAnswerProps = {
+  data: Chat;
+};
+
+export function ChatAiAnswer({ data }: ChatAiAnswerProps) {
   return (
     <div className="flex gap-2">
       <div className="size-6 md:size-10 bg-blue-700 rounded-full flex items-center justify-center">
@@ -9,23 +14,14 @@ export function ChatAiAnswer() {
 
       <div className=" bg-slate-900 px-3 py-2 rounded-r-[8px] rounded-bl-[8px] max-w-2xl w-full">
         <div className="flex flex-col mb-1">
-          <span className="text-slate-50/60 text-[10px]">Data</span>
-          <span className="text-slate-50 text-xs">
-            {new Date().toLocaleDateString("pt-br", {
+          <span className="text-muted-foreground text-[10px]">
+            {new Date(data.createdAt).toLocaleDateString("pt-br", {
               minute: "numeric",
               second: "numeric",
             })}
           </span>
         </div>
-        <p className=" text-slate-50 text-sm font-light">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Non nihil,
-          cumque beatae laboriosam ipsa rerum voluptas qui quas vel tenetur
-          optio alias quis praesentium ipsum provident sequi. Voluptatum, et ad.
-          psa rerum voluptas qui quas vel tenetur optio alias quis praesentium
-          ipsum provident sequi. Voluptatum, et ad. psa rerum voluptas qui quas
-          vel tenetur optio alias quis praesentium ipsum provident sequi.
-          Voluptatum, et ad.
-        </p>
+        <p className=" text-slate-50 text-sm font-light">{data.content}</p>
       </div>
     </div>
   );
