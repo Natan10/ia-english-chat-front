@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Poppins } from "next/font/google";
 
-import { Toaster } from "@/components/ui/sonner";
+import { NotificationProvider } from "@/contexts/notification-context";
+import { QueryProvider } from "@/contexts/query-context";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -25,9 +26,12 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html>
-        <body className={`${poppins.variable}`}>{children}</body>
+        <NotificationProvider>
+          <QueryProvider>
+            <body className={`${poppins.variable}`}>{children}</body>
+          </QueryProvider>
+        </NotificationProvider>
       </html>
-      <Toaster />
     </ClerkProvider>
   );
 }
