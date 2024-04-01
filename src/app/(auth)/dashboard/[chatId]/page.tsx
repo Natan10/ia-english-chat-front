@@ -1,4 +1,9 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { LoaderCircle } from "lucide-react";
 
 import { Empty } from "@/components/animate/empty";
 import { ChatContainer } from "@/components/chat/chat-container";
@@ -10,6 +15,9 @@ import { ChatHistory } from "@/domain/chat-history";
 import { ChatType } from "@/domain/chat-type";
 import { CardUser } from "@/components/chat/cards/card-user/card-user";
 import { CardAi } from "@/components/chat/cards/card-ai/card-ai";
+import { CardLoad } from "@/components/chat/cards/card-load";
+import { sendQuestion } from "./actions";
+import { onError, onMutate, onSettled } from "./mutation-functions";
 
 async function getChatHistory(chatId: string) {
   try {
@@ -18,7 +26,6 @@ async function getChatHistory(chatId: string) {
       {
         next: {
           tags: ["chat-history"],
-          revalidate: 60,
         },
       }
     );
@@ -29,35 +36,110 @@ async function getChatHistory(chatId: string) {
   }
 }
 
-export default async function ChatPage({
-  params,
+export default function ChatPage({
+  params: { chatId },
 }: {
   params: { chatId: string };
 }) {
-  const chatHistory = await getChatHistory(params.chatId);
+  const formRef = useRef<HTMLFormElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const chatItemRef = useRef<HTMLDivElement>(null);
+  const [fileUpload, setFileUpload] = useState<File | null>(null);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["chat-history", chatId],
+    queryFn: async () => await getChatHistory(chatId),
+    refetchOnWindowFocus: false,
+  });
+
+  const mutation = useMutation({
+    mutationFn: async (formData: FormData) => {
+      formData.append("chat-id", chatId);
+      const response = await sendQuestion(formData);
+      return response;
+    },
+    onMutate: async (variables) => await onMutate(chatId, variables),
+    onError: (error, variables, context) => onError(chatId, context),
+    onSettled: async () => await onSettled(chatId),
+  });
+
+  async function sendRequest(formData: FormData) {
+    try {
+      if (!formData.get("user-question")) {
+        toast.info("Envie uma pergunta valida");
+        return;
+      }
+      await mutation.mutateAsync(formData);
+      formRef.current?.reset();
+      setFileUpload(null);
+    } catch (e) {
+      toast.error("Erro ao enviar pergunta, tente novamente");
+    }
+  }
+
+  useEffect(() => {
+    if (mutation.isPending) {
+      chatItemRef.current?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }
+  }, [mutation]);
+
+  useEffect(() => {
+    containerRef.current?.scrollTo({
+      top: containerRef.current.scrollHeight,
+    });
+  }, []);
 
   return (
     <section className="h-full p-10">
       <ChatContainer>
         <ChatHeader
-          chatId={chatHistory!.id}
-          createdAt={chatHistory!.createdAt}
+          chatId={chatId}
+          createdAt={data?.createdAt}
+          isLoading={isLoading}
         />
         <Separator className="bg-slate-400 h-[1px] my-3" />
-        <ChatMessagesContainer>
-          {chatHistory && chatHistory.history.length > 0 ? (
-            chatHistory.history.map((chatResponse) => {
-              return chatResponse.type === ChatType.IA ? (
-                <CardAi key={chatResponse.id} data={chatResponse} />
+        {isLoading && (
+          <div className="flex items-center justify-center gap-3 w-full h-full">
+            <LoaderCircle
+              size={30}
+              className="animate-spin text-muted-foreground"
+            />
+            <p className="text-muted-foreground">Carregando mensagens...</p>
+          </div>
+        )}
+        {data && (
+          <>
+            <ChatMessagesContainer ref={containerRef}>
+              {data.history.length > 0 ? (
+                data.history.map((chatResponse) => {
+                  return chatResponse.type === ChatType.IA ? (
+                    <CardAi key={chatResponse.id} data={chatResponse} />
+                  ) : (
+                    <CardUser key={chatResponse.id} data={chatResponse} />
+                  );
+                })
               ) : (
-                <CardUser key={chatResponse.id} data={chatResponse} />
-              );
-            })
-          ) : (
-            <Empty />
-          )}
-        </ChatMessagesContainer>
-        <ChatInput />
+                <Empty />
+              )}
+              {mutation.isPending && <CardLoad type="IA" ref={chatItemRef} />}
+            </ChatMessagesContainer>
+            <form
+              action={sendRequest}
+              onSubmit={(e) =>
+                mutation.isPending ? e.preventDefault() : undefined
+              }
+              ref={formRef}
+            >
+              <ChatInput
+                file={fileUpload}
+                setFile={setFileUpload}
+                isLoading={mutation.isPending}
+              />
+            </form>
+          </>
+        )}
       </ChatContainer>
     </section>
   );
