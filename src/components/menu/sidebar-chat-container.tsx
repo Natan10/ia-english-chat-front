@@ -1,8 +1,11 @@
+import { currentUser } from "@clerk/nextjs";
 import { ChatLink } from "./chat-link";
 
 export async function SidebarChatContainer() {
+  const user = await currentUser();
+
   const chatsData = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/chats`,
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/chats/${user?.emailAddresses[0].emailAddress}`,
     {
       next: {
         tags: ["chats"],

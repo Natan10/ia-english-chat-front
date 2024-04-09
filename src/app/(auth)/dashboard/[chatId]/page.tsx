@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
 
 import { Empty } from "@/components/animate/empty";
 import { ChatContainer } from "@/components/chat/chat-container";
@@ -19,10 +20,10 @@ import { CardLoad } from "@/components/chat/cards/card-load";
 import { sendQuestion } from "./actions";
 import { onError, onMutate, onSettled } from "./mutation-functions";
 
-async function getChatHistory(chatId: string) {
+async function getChatHistory(chatId: string, userEmail: string) {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/chat-history/${chatId}`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/chat-history/${chatId}/${userEmail}`,
       {
         next: {
           tags: ["chat-history"],
@@ -41,6 +42,7 @@ export default function ChatPage({
 }: {
   params: { chatId: string };
 }) {
+  const { user, isLoaded } = useUser();
   const formRef = useRef<HTMLFormElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const chatItemRef = useRef<HTMLDivElement>(null);
@@ -48,13 +50,16 @@ export default function ChatPage({
 
   const { data, isLoading } = useQuery({
     queryKey: ["chat-history", chatId],
-    queryFn: async () => await getChatHistory(chatId),
+    queryFn: async () =>
+      await getChatHistory(chatId, user?.emailAddresses[0].emailAddress || ""),
     refetchOnWindowFocus: false,
+    enabled: isLoaded,
   });
 
   const mutation = useMutation({
     mutationFn: async (formData: FormData) => {
       formData.append("chat-id", chatId);
+      formData.append("user-email", user?.emailAddresses[0].emailAddress || "");
       const response = await sendQuestion(formData);
       return response;
     },
@@ -65,7 +70,7 @@ export default function ChatPage({
 
   async function sendRequest(formData: FormData) {
     try {
-      if (!formData.get("user-question")) {
+      if (!formData.get("file-upload") && !formData.get("user-question")) {
         toast.info("Envie uma pergunta valida");
         return;
       }

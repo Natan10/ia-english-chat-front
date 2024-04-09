@@ -6,6 +6,7 @@ import { revalidateTag } from "next/cache";
 async function sendQuestion(formData: FormData) {
   const chatId = formData.get("chat-id");
   const userQuestion = formData.get("user-question");
+  const userEmail = formData.get("user-email");
   const file = formData.get("file-upload");
 
   if (userQuestion) {
@@ -18,6 +19,7 @@ async function sendQuestion(formData: FormData) {
         },
         body: JSON.stringify({
           chatId: chatId,
+          userEmail: userEmail,
           content: userQuestion,
         }),
       }
