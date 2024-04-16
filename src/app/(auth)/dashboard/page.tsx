@@ -1,6 +1,4 @@
 import { Send } from "lucide-react";
-import { ChatAiAnswer } from "@/components/chat/chat-ai-answer";
-import { ChatAiUser } from "@/components/chat/chat-ai-user";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
@@ -26,13 +24,13 @@ export default function Dashboard() {
         </div>
 
         <div className="mt-4 flex-1 flex flex-col gap-2 overflow-y-auto scrollbar-hide">
-          <ChatAiAnswer />
+          {/* <ChatAiAnswer />
           <ChatAiUser />
           <ChatAiUser />
           <ChatAiUser />
           <ChatAiUser />
           <ChatAiAnswer />
-          <ChatAiAnswer />
+          <ChatAiAnswer /> */}
         </div>
         <div className="mt-4 flex flex-col gap-2">
           <Textarea
