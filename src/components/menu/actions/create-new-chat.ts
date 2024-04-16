@@ -1,5 +1,6 @@
 "use server";
 
+import { startChat } from "@/routes/api-endpoints";
 import { currentUser } from "@clerk/nextjs/server";
 import { revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
@@ -16,7 +17,7 @@ export async function createNewChat() {
   }
 
   const chatResponse = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/start-chat`,
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/${startChat}`,
     {
       method: "POST",
       body: JSON.stringify({

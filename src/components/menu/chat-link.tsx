@@ -6,9 +6,10 @@ import { usePathname } from "next/navigation";
 
 export type ChatLinkProps = {
   chatId: string;
+  chatTitle: string | null;
 };
 
-export function ChatLink({ chatId }: ChatLinkProps) {
+export function ChatLink({ chatId, chatTitle }: ChatLinkProps) {
   const pathname = usePathname();
   const redirectTo = `/dashboard/${chatId}`;
   const isActive = pathname === redirectTo;
@@ -28,11 +29,11 @@ export function ChatLink({ chatId }: ChatLinkProps) {
       `}
     >
       <MessageSquare
-        size={24}
+        size={12}
         className="group-data-[active=true]:text-blue-600"
       />
       <p className="text-xs font-medium truncate text-slate-800 group-data-[active=true]:text-blue-600">
-        {chatId}
+        {chatTitle || chatId}
       </p>
       <button className="outline-none rotate-90 group-data-[active=true]:text-blue-600">
         ...
