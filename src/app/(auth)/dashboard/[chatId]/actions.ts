@@ -1,6 +1,7 @@
 "use server";
 
 import { Chat } from "@/domain/chat";
+import { chatSpeechToText } from "@/routes/api-endpoints";
 import { revalidateTag } from "next/cache";
 
 async function sendQuestion(formData: FormData) {
@@ -31,13 +32,11 @@ async function sendQuestion(formData: FormData) {
   }
 
   if (file) {
-    console.log("aqui", file);
-
     const serverData = new FormData();
     serverData.append("data", file);
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/chat-speech-text/${chatId}`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/${chatSpeechToText}/${chatId}/${userEmail}`,
       {
         method: "POST",
         body: serverData,
