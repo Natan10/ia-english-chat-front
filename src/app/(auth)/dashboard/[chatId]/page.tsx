@@ -17,17 +17,16 @@ import { ChatType } from "@/domain/chat-type";
 import { CardUser } from "@/components/chat/cards/card-user/card-user";
 import { CardAi } from "@/components/chat/cards/card-ai/card-ai";
 import { CardLoad } from "@/components/chat/cards/card-load";
+import { chatHistory } from "@/routes/api-endpoints";
 import { sendQuestion } from "./actions";
 import { onError, onMutate, onSettled } from "./mutation-functions";
 
 async function getChatHistory(chatId: string, userEmail: string) {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/chat-history/${chatId}/${userEmail}`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/${chatHistory}/${chatId}/${userEmail}`,
       {
-        next: {
-          tags: ["chat-history"],
-        },
+        cache: "no-cache",
       }
     );
     const data = await response.json();
@@ -101,8 +100,9 @@ export default function ChatPage({
       <ChatContainer>
         <ChatHeader
           chatId={chatId}
+          chatTitle={data?.title}
           createdAt={data?.createdAt}
-          isLoading={isLoading}
+          isLoading={isLoading && !data}
         />
         <Separator className="bg-slate-400 h-[1px] my-3" />
         {isLoading && (
