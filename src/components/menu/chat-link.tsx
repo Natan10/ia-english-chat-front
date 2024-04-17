@@ -3,6 +3,18 @@
 import Link from "next/link";
 import { MessageSquare } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
+import { toast } from "sonner";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { deleteChatById } from "./actions/delete-chat-by-id";
 
 export type ChatLinkProps = {
   chatId: string;
@@ -10,16 +22,25 @@ export type ChatLinkProps = {
 };
 
 export function ChatLink({ chatId, chatTitle }: ChatLinkProps) {
+  const { user } = useUser();
   const pathname = usePathname();
   const redirectTo = `/dashboard/${chatId}`;
   const isActive = pathname === redirectTo;
 
+  async function onDelete() {
+    try {
+      await deleteChatById(chatId, user?.emailAddresses[0].emailAddress || "");
+      toast.success(`Chat ${chatTitle || chatId} removido com sucesso`);
+    } catch (err) {
+      toast.error(`Erro ao deletar ${chatTitle || chatId}`);
+    }
+  }
+
   return (
-    <Link
-      href={redirectTo}
+    <div
       data-active={isActive}
       className={`
-        p-2 flex items-center justify-between gap-2 
+        p-2 flex items-center gap-2 
         border border-slate-400 rounded-xl
         hover:border-slate-900
         hover:cursor-pointer
@@ -28,16 +49,47 @@ export function ChatLink({ chatId, chatTitle }: ChatLinkProps) {
         group
       `}
     >
-      <MessageSquare
-        size={12}
-        className="group-data-[active=true]:text-blue-600"
-      />
-      <p className="text-xs font-medium truncate text-slate-800 group-data-[active=true]:text-blue-600">
-        {chatTitle || chatId}
-      </p>
-      <button className="outline-none rotate-90 group-data-[active=true]:text-blue-600">
-        ...
-      </button>
-    </Link>
+      <Link href={redirectTo} className="flex items-center gap-2 w-full">
+        <MessageSquare
+          size={12}
+          className="group-data-[active=true]:text-blue-600"
+        />
+        <p className="max-w-[120px] text-xs font-medium truncate text-slate-800 group-data-[active=true]:text-blue-600">
+          {chatTitle || chatId}
+        </p>
+      </Link>
+      <ChatLinkOptions isActiveLink={isActive} onDelete={onDelete} />
+    </div>
+  );
+}
+
+function ChatLinkOptions({
+  isActiveLink,
+  onDelete,
+}: {
+  isActiveLink: boolean;
+  onDelete: () => Promise<void>;
+}) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="outline-none rotate-90 group-data-[active=true]:text-blue-600">
+          ...
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuLabel className="text-xs">Actions</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <button
+            className="w-full cursor-pointer outline-none disabled:text-gray-500"
+            onClick={onDelete}
+            disabled={isActiveLink}
+          >
+            Delete
+          </button>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
