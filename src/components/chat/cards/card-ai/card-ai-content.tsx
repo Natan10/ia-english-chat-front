@@ -15,7 +15,9 @@ export function CardAiContent({ data }: CardAiContentProps) {
           })}
         </span>
       </div>
-      <p className=" text-slate-50 text-sm font-light">{data.content}</p>
+      <p className=" text-slate-50 text-xs md:text-sm font-light">
+        {data.content}
+      </p>
     </div>
   );
 }

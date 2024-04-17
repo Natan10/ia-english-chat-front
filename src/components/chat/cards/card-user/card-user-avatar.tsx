@@ -13,7 +13,7 @@ export function CardUserAvatar() {
         <Avatar.Avatar className="size-6 md:size-10">
           <Avatar.AvatarImage src={user?.imageUrl} />
           <Avatar.AvatarFallback>
-            <User size={20} className="text-white" />
+            <User className="text-white size-4 md:size-6" />
           </Avatar.AvatarFallback>
         </Avatar.Avatar>
       ) : (
