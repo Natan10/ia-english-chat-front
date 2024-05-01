@@ -7,7 +7,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
       className={`h-screen max-h-screen overflow-hidden grid grid-cols-1 md:grid-cols-[200px_auto] bg-slate-100
   `}
     >
-      <SidebarMenu />
+      {/* <SidebarMenu /> */}
       <section className="overflow-hidden">{children}</section>
     </main>
   );

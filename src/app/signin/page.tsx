@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
@@ -14,6 +15,8 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/utils/clients/supabase-browser-client";
 import tutorAi from "@/assets/tutor.png";
+import google from "@/assets/google-logo.svg";
+import github from "@/assets/github-logo.svg";
 
 const schemeValidationLogin = z.object({
   email: z
@@ -61,6 +64,29 @@ export default function Signin() {
     }
   }
 
+  async function handleGoogleSignin() {
+    try {
+      await client.auth.signInWithOAuth({
+        provider: "google",
+      });
+    } catch (err) {
+      console.log(err);
+      toast.error("Error on Sign in, try again!");
+    }
+  }
+
+  useEffect(() => {
+    client.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN") {
+        return router.push("dashboard");
+      }
+
+      if (event === "SIGNED_OUT") {
+        return router.push("signin");
+      }
+    });
+  }, [client.auth, router]);
+
   return (
     <section className="h-screen max-h-screen w-full overflow-hidden">
       <div className="h-full grid grid-cols-1 md:grid-cols-2">
@@ -73,7 +99,19 @@ export default function Signin() {
                 AI Tutor Login
               </h1>
             </div>
-            <div className="mt-6">
+            <div className="mt-6 flex items-center justify-between gap-3">
+              <Button
+                variant={"outline"}
+                className="flex-1"
+                onClick={handleGoogleSignin}
+              >
+                <Image src={google} height={20} width={20} alt="google logo" />
+              </Button>
+              <Button className="flex-1">
+                <Image src={github} height={20} width={20} alt="github logo" />
+              </Button>
+            </div>
+            <div className="mt-4">
               <form onSubmit={handleSubmit(handleSignin)}>
                 <div className="flex flex-col gap-3">
                   <div className="flex flex-col gap-1">
