@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { redirect } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,6 +53,7 @@ export default function Signin() {
         toast.error(response.error.message);
         return;
       }
+      redirect("/dashboard");
     } catch (err) {
       toast.error("Error on Sign in, try again!");
     }
