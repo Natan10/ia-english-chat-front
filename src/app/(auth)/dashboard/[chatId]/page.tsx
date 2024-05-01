@@ -20,6 +20,7 @@ import { CardLoad } from "@/components/chat/cards/card-load";
 import { chatHistory } from "@/routes/api-endpoints";
 import { sendQuestion } from "./actions";
 import { onError, onMutate, onSettled } from "./mutation-functions";
+import { LoadMessages } from "@/components/animate/load-messages";
 
 async function getChatHistory(chatId: string, userEmail: string) {
   try {
@@ -95,7 +96,9 @@ export default function ChatPage({
     });
   }, []);
 
-  return (
+  return isLoading ? (
+    <LoadMessages />
+  ) : (
     <section className="h-full p-10">
       <ChatContainer>
         <ChatHeader
@@ -105,15 +108,6 @@ export default function ChatPage({
           isLoading={isLoading && !data}
         />
         <Separator className="bg-slate-400 h-[1px] my-3" />
-        {isLoading && (
-          <div className="flex items-center justify-center gap-3 w-full h-full">
-            <LoaderCircle
-              size={30}
-              className="animate-spin text-muted-foreground"
-            />
-            <p className="text-muted-foreground">Carregando mensagens...</p>
-          </div>
-        )}
         {data && (
           <>
             <ChatMessagesContainer ref={containerRef}>

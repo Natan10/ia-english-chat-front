@@ -8,7 +8,7 @@ type ChatUserProps = {
 
 export function CardUserContent({ data }: ChatUserProps) {
   return (
-    <div className=" bg-white px-3 py-2 rounded-l-[8px] rounded-br-[8px] max-w-2xl">
+    <div className=" bg-white px-3 py-2 rounded-l-[8px] rounded-br-[8px] md:max-w-2xl">
       <div className="flex flex-col mb-1">
         <span className="text-slate-900 text-[10px]">
           {new Date(data.createdAt).toLocaleDateString("pt-br", {
@@ -18,10 +18,10 @@ export function CardUserContent({ data }: ChatUserProps) {
         </span>
       </div>
       {data.file ? (
-        <div className="flex gap-3">
+        <div className="flex items-center gap-3">
           <Link
             href={data.file.url}
-            className="group flex-1 flex items-center justify-center"
+            className="group flex items-center justify-center"
             target="_blank"
           >
             <div className="p-2 rounded-full border border-black/30 group-hover:border-blue-600 transition-all">
@@ -29,7 +29,7 @@ export function CardUserContent({ data }: ChatUserProps) {
             </div>
           </Link>
           <div className="overflow-hidden">
-            <p className="text-xs text-slate-800 font-medium truncate">
+            <p className="text-xs text-slate-800 font-medium truncate w-44 md:w-full">
               {data.file.fileName}
             </p>
             <div className="flex items-center gap-6">
@@ -43,7 +43,9 @@ export function CardUserContent({ data }: ChatUserProps) {
           </div>
         </div>
       ) : (
-        <p className=" text-slate-950 text-sm font-light">{data.content}</p>
+        <p className=" text-slate-950 text-xs md:text-sm font-light">
+          {data.content}
+        </p>
       )}
     </div>
   );

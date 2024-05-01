@@ -7,7 +7,7 @@ import { SidebarChatContainer } from "./sidebar-chat-container";
 
 export function SidebarMenu() {
   return (
-    <aside className="border-r overflow-hidden h-full border-r-slate-300">
+    <aside className="hidden md:block border-r overflow-hidden h-full border-r-slate-300">
       <nav className="h-full flex flex-col">
         <div className="p-5 flex justify-center items-center gap-3">
           <h1 className="text-lg font-normal">AI Tutor</h1>
