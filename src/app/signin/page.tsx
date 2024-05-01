@@ -4,8 +4,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import * as z from "zod";
-import { redirect } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +14,6 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/utils/clients/supabase-browser-client";
 import tutorAi from "@/assets/tutor.png";
-import { toast } from "sonner";
 
 const schemeValidationLogin = z.object({
   email: z
@@ -40,6 +40,7 @@ export default function Signin() {
   } = useForm<FormDataType>({
     resolver: zodResolver(schemeValidationLogin),
   });
+  const router = useRouter();
   const client = createClient();
 
   async function handleSignin(data: FormDataType) {
@@ -53,8 +54,9 @@ export default function Signin() {
         toast.error(response.error.message);
         return;
       }
-      redirect("/dashboard");
+      return router.push("dashboard");
     } catch (err) {
+      console.log(err);
       toast.error("Error on Sign in, try again!");
     }
   }
