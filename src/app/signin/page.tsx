@@ -64,6 +64,13 @@ export default function Signin() {
     }
   }
 
+  async function handleGithubSignin() {
+    const { data, error } = await client.auth.signInWithOAuth({
+      provider: "github",
+    });
+    console.log({ data });
+  }
+
   async function handleGoogleSignin() {
     try {
       await client.auth.signInWithOAuth({
@@ -107,7 +114,7 @@ export default function Signin() {
               >
                 <Image src={google} height={20} width={20} alt="google logo" />
               </Button>
-              <Button className="flex-1">
+              <Button className="flex-1" onClick={handleGithubSignin}>
                 <Image src={github} height={20} width={20} alt="github logo" />
               </Button>
             </div>
