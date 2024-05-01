@@ -1,9 +1,10 @@
-import { authMiddleware, redirectToSignIn } from "@clerk/nextjs";
-import { NextResponse } from "next/server";
+// import { authMiddleware } from "@clerk/nextjs";
 
-export default authMiddleware({
-  publicRoutes: ["/signin", "/signup"],
-});
+// export default authMiddleware({
+//   publicRoutes: ["/signin", "/signup"],
+// });
+
+export default function middleware() {}
 
 export const config = {
   matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
