@@ -1,10 +1,14 @@
-// import { authMiddleware } from "@clerk/nextjs";
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "./utils/clients/supabase-server-client";
 
-// export default authMiddleware({
-//   publicRoutes: ["/signin", "/signup"],
-// });
-
-export default function middleware() {}
+export default async function middleware(req: NextRequest) {
+  const res = NextResponse.next({
+    headers: req.headers,
+  });
+  const supabase = createClient();
+  await supabase.auth.getUser();
+  return res;
+}
 
 export const config = {
   matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
