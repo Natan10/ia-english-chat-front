@@ -65,34 +65,16 @@ export default function Signin() {
   }
 
   async function handleGithubSignin() {
-    const { data, error } = await client.auth.signInWithOAuth({
+    await client.auth.signInWithOAuth({
       provider: "github",
     });
-    console.log({ data });
   }
 
   async function handleGoogleSignin() {
-    try {
-      await client.auth.signInWithOAuth({
-        provider: "google",
-      });
-    } catch (err) {
-      console.log(err);
-      toast.error("Error on Sign in, try again!");
-    }
-  }
-
-  useEffect(() => {
-    client.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_IN") {
-        return router.push("dashboard");
-      }
-
-      if (event === "SIGNED_OUT") {
-        return router.push("signin");
-      }
+    await client.auth.signInWithOAuth({
+      provider: "google",
     });
-  }, [client.auth, router]);
+  }
 
   return (
     <section className="h-screen max-h-screen w-full overflow-hidden">
