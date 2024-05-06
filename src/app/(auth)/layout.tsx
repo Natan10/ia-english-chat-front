@@ -1,8 +1,12 @@
+import { ReactNode } from "react";
 import { SidebarMenu } from "@/components/menu/sidebar-menu";
 import { SupabaseProvider } from "@/contexts/supabase-context";
-import { ReactNode } from "react";
 
-export default function AuthLayout({ children }: { children: ReactNode }) {
+export default async function AuthLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   return (
     <SupabaseProvider>
       <main

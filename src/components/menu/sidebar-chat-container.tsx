@@ -1,28 +1,26 @@
-import { currentUser } from "@clerk/nextjs";
+import { useQuery } from "@tanstack/react-query";
+
 import { ChatLink } from "./chat-link";
-import { userChats } from "@/routes/api-endpoints";
+import { getChatsFromUser } from "./actions/get-chats";
+import { ChatHistory } from "@/domain/chat-history";
+import { User } from "@/contexts/supabase-context";
 
-export async function SidebarChatContainer() {
-  const user = await currentUser();
+type SidebarChatContainerProps = {
+  user: User | null;
+};
 
-  const chatsData = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/${userChats}/${user?.emailAddresses[0].emailAddress}`,
-    {
-      next: {
-        tags: ["chats"],
-      },
-    }
-  );
-
-  const chats = (await chatsData.json()) as {
-    id: string;
-    title: string | null;
-    status: number;
-  }[];
+export function SidebarChatContainer({ user }: SidebarChatContainerProps) {
+  const { data } = useQuery({
+    queryKey: ["user-chats", user?.id],
+    queryFn: async () => {
+      const data = await getChatsFromUser();
+      return data;
+    },
+  });
 
   return (
     <div className="mt-2 px-2 flex-grow flex flex-col gap-2 overflow-y-auto scrollbar-hide">
-      {chats.map((chat) => {
+      {data?.map((chat: ChatHistory) => {
         return (
           <ChatLink key={chat.id} chatId={chat.id} chatTitle={chat.title} />
         );

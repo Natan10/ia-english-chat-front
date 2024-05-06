@@ -1,34 +1,28 @@
 "use server";
 
-import { startChat } from "@/routes/api-endpoints";
-import { currentUser } from "@clerk/nextjs/server";
-import { revalidateTag } from "next/cache";
+import { ChatStatus } from "@/domain/chat-history";
+import { createClient } from "@/utils/clients/supabase-server-client";
 import { redirect } from "next/navigation";
 
-type ChatHistoryResponse = {
-  chatId: string;
-};
-
 export async function createNewChat() {
-  const user = await currentUser();
+  const supabase = createClient();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect(`/`);
-  }
+  if (!user) redirect("signin");
 
-  const chatResponse = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/${startChat}`,
-    {
-      method: "POST",
-      body: JSON.stringify({
-        email: user.emailAddresses[0].emailAddress,
-      }),
-      headers: {
-        "content-type": "application/json",
+  if (error) throw error;
+
+  await supabase
+    .from("chatHistory")
+    .insert([
+      {
+        title: null,
+        status: ChatStatus.Active,
+        user_id: user.id,
       },
-    }
-  );
-  const { chatId } = (await chatResponse.json()) as ChatHistoryResponse;
-  revalidateTag("chats");
-  redirect(`/dashboard/${chatId}`);
+    ])
+    .select();
 }

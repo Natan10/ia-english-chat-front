@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { MessageSquare } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 
 import {
@@ -15,6 +14,8 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { deleteChatById } from "./actions/delete-chat-by-id";
+import { queryClient } from "@/contexts/query-context";
+import { useSupabase } from "@/contexts/supabase-context";
 
 export type ChatLinkProps = {
   chatId: string;
@@ -22,14 +23,15 @@ export type ChatLinkProps = {
 };
 
 export function ChatLink({ chatId, chatTitle }: ChatLinkProps) {
-  const { user } = useUser();
+  const { user } = useSupabase();
   const pathname = usePathname();
   const redirectTo = `/dashboard/${chatId}`;
   const isActive = pathname === redirectTo;
 
   async function onDelete() {
     try {
-      await deleteChatById(chatId, user?.emailAddresses[0].emailAddress || "");
+      await deleteChatById(chatId);
+      await queryClient.refetchQueries({ queryKey: ["user-chats", user?.id] });
       toast.success(`Chat ${chatTitle || chatId} removido com sucesso`);
     } catch (err) {
       toast.error(`Erro ao deletar ${chatTitle || chatId}`);

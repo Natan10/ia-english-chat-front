@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
@@ -13,10 +12,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { createClient } from "@/utils/clients/supabase-browser-client";
 import tutorAi from "@/assets/tutor.png";
 import google from "@/assets/google-logo.svg";
 import github from "@/assets/github-logo.svg";
+import { createClient } from "@/utils/clients/supabase-browser-client";
 
 const schemeValidationLogin = z.object({
   email: z
@@ -44,11 +43,12 @@ export default function Signin() {
     resolver: zodResolver(schemeValidationLogin),
   });
   const router = useRouter();
-  const client = createClient();
+  const supabase = createClient();
+  const origin = window.location.origin;
 
   async function handleSignin(data: FormDataType) {
     try {
-      const response = await client.auth.signInWithPassword({
+      const response = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
       });
@@ -65,14 +65,20 @@ export default function Signin() {
   }
 
   async function handleGithubSignin() {
-    await client.auth.signInWithOAuth({
+    await supabase.auth.signInWithOAuth({
       provider: "github",
+      options: {
+        redirectTo: `${origin}/api/auth/callback`,
+      },
     });
   }
 
   async function handleGoogleSignin() {
-    await client.auth.signInWithOAuth({
+    await supabase.auth.signInWithOAuth({
       provider: "google",
+      options: {
+        redirectTo: `${origin}/api/auth/callback`,
+      },
     });
   }
 
