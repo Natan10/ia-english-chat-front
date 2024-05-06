@@ -3,8 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { LoaderCircle } from "lucide-react";
-import { useUser } from "@clerk/nextjs";
 
 import { Empty } from "@/components/animate/empty";
 import { ChatContainer } from "@/components/chat/chat-container";
@@ -12,37 +10,22 @@ import { ChatHeader } from "@/components/chat/chat-header";
 import { ChatInput } from "@/components/chat/chat-input";
 import { ChatMessagesContainer } from "@/components/chat/chat-messages-container";
 import { Separator } from "@/components/ui/separator";
-import { ChatHistory } from "@/domain/chat-history";
 import { ChatType } from "@/domain/chat-type";
 import { CardUser } from "@/components/chat/cards/card-user/card-user";
 import { CardAi } from "@/components/chat/cards/card-ai/card-ai";
 import { CardLoad } from "@/components/chat/cards/card-load";
-import { chatHistory } from "@/routes/api-endpoints";
 import { sendQuestion } from "./actions";
 import { onError, onMutate, onSettled } from "./mutation-functions";
 import { LoadMessages } from "@/components/animate/load-messages";
-
-async function getChatHistory(chatId: string, userEmail: string) {
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/${chatHistory}/${chatId}/${userEmail}`,
-      {
-        cache: "no-cache",
-      }
-    );
-    const data = await response.json();
-    return data as ChatHistory;
-  } catch (e) {
-    toast.error(`Erro ao trazer mensagens do: ${chatId}`);
-  }
-}
+import { useSupabase } from "@/contexts/supabase-context";
+import { getChatHistoryById } from "./actions/get-chat-history-by-id";
 
 export default function ChatPage({
   params: { chatId },
 }: {
   params: { chatId: string };
 }) {
-  const { user, isLoaded } = useUser();
+  const { supabase, user } = useSupabase();
   const formRef = useRef<HTMLFormElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const chatItemRef = useRef<HTMLDivElement>(null);
@@ -50,16 +33,24 @@ export default function ChatPage({
 
   const { data, isLoading } = useQuery({
     queryKey: ["chat-history", chatId],
-    queryFn: async () =>
-      await getChatHistory(chatId, user?.emailAddresses[0].emailAddress || ""),
+    queryFn: async () => {
+      if (!user) return null;
+      try {
+        return await getChatHistoryById({ user, chatId, supabase });
+      } catch (err) {
+        toast.error("Error on load");
+      }
+      return null;
+    },
     refetchOnWindowFocus: false,
-    enabled: isLoaded,
+    enabled: !!user,
   });
 
   const mutation = useMutation({
     mutationFn: async (formData: FormData) => {
+      if (!user) return null;
       formData.append("chat-id", chatId);
-      formData.append("user-email", user?.emailAddresses[0].emailAddress || "");
+      formData.append("user-id", user.id);
       const response = await sendQuestion(formData);
       return response;
     },
@@ -95,6 +86,8 @@ export default function ChatPage({
       top: containerRef.current.scrollHeight,
     });
   }, []);
+
+  console.log({ data });
 
   return isLoading ? (
     <LoadMessages />
