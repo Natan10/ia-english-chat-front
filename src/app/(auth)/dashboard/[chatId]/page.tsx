@@ -14,11 +14,11 @@ import { ChatType } from "@/domain/chat-type";
 import { CardUser } from "@/components/chat/cards/card-user/card-user";
 import { CardAi } from "@/components/chat/cards/card-ai/card-ai";
 import { CardLoad } from "@/components/chat/cards/card-load";
-import { sendQuestion } from "./actions";
 import { onError, onMutate, onSettled } from "./mutation-functions";
 import { LoadMessages } from "@/components/animate/load-messages";
 import { useSupabase } from "@/contexts/supabase-context";
 import { getChatHistoryById } from "./actions/get-chat-history-by-id";
+import { sendQuestion } from "./actions/send-question";
 
 export default function ChatPage({
   params: { chatId },
@@ -50,8 +50,8 @@ export default function ChatPage({
     mutationFn: async (formData: FormData) => {
       if (!user) return null;
       formData.append("chat-id", chatId);
-      formData.append("user-id", user.id);
       const response = await sendQuestion(formData);
+      console.log({ response });
       return response;
     },
     onMutate: async (variables) => await onMutate(chatId, variables),
@@ -86,8 +86,6 @@ export default function ChatPage({
       top: containerRef.current.scrollHeight,
     });
   }, []);
-
-  console.log({ data });
 
   return isLoading ? (
     <LoadMessages />

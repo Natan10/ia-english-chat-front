@@ -4,26 +4,15 @@ import { currentUser } from "@clerk/nextjs";
 import { revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { chatOptions } from "@/routes/api-endpoints";
+import { createClient } from "@/utils/clients/supabase-server-client";
 
 export async function updateTitle(chatId: string, title: string) {
-  const user = await currentUser();
+  const supabase = createClient();
+  const { error } = await supabase
+    .from("chatHistory")
+    .update({ title: title })
+    .eq("id", chatId)
+    .select();
 
-  if (!user) {
-    redirect("/");
-  }
-
-  await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/${chatOptions}/${chatId}/${user?.emailAddresses[0].emailAddress}`,
-    {
-      method: "PATCH",
-      body: JSON.stringify({
-        title: title.trim(),
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
-
-  revalidateTag("chats");
+  if (error) throw new Error(error.message);
 }
